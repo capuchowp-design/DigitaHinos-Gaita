@@ -11,6 +11,8 @@ Tabela usada (Dó, Richter): soprar 1–10 = C4 E4 G4 C5 E5 G5 C6 E6 G6 C7; aspi
 Bends: aspirar nos furos 1, 2 (½ e 1 tom), 3 (½, 1 e 1½), 4 e 6; soprar nos furos 8, 9 e 10 (½ e 1 tom).
 Overblow (furos 1–6) = nota de aspirar + ½ tom; overdraw (7–9) = nota de soprar + ½ tom.
 
+- **Salvar** (na Partitura): menu com Partitura (PDF com pauta e furos), Áudio WAV (renderizado com o som real da gaita), JSON e MIDI. O JSON pode ser aberto de volta pelo botão Abrir.
+
 Publique todos os arquivos na raiz do repositório (GitHub Pages). A cada atualização, mude o número em `CACHE_NAME` do `sw.js` (e o `?v=` dos ícones, se trocá-los).
 
 Créditos do som: FluidR3_GM por Frank Wen (CC BY 3.0), via github.com/gleitz/midi-js-soundfonts.

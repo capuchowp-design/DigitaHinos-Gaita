@@ -1,5 +1,5 @@
 // Mude este número a CADA publicação nova no GitHub (v3 -> v4 -> v5...)
-const CACHE_NAME = 'gaita-bounce-v1';
+const CACHE_NAME = 'gaita-bounce-v2';
 const CORE = ['./', './index.html', './manifest.json'];
 const EXTRA = [
   './icon-192x192.png?v=1', './icon-512x512.png?v=1', './icon-maskable-192x192.png?v=1', './icon-maskable-512x512.png?v=1', './apple-touch-icon.png?v=1', './favicon-32x32.png?v=1',

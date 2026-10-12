@@ -180,6 +180,12 @@ window.FLUTE_SAMPLES={"v":2,"roots":[[60,0.95052,2.19995,"SUQzBAAAAAAAI1RTU0UAAA
         .score-toolbar label { font-size:11px; color:var(--text-muted); }
         .score-toolbar select, .score-toolbar input[type=number] { background:var(--bg-btn); color:var(--text-main); border:1px solid var(--border-btn); border-radius:5px; padding:5px 7px; font-size:12px; }
         .score-toolbar input[type=number] { width:56px; }
+        .save-menu{position:relative;display:inline-block}
+        .save-pop{position:absolute;right:0;top:calc(100% + 6px);min-width:230px;background:var(--bg-panel);border:1px solid var(--border-btn);border-radius:10px;padding:6px;z-index:60;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+        .save-pop[hidden]{display:none}
+        .save-pop button{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:7px;padding:8px 10px;cursor:pointer;color:var(--text-main);font-family:inherit}
+        .save-pop button:hover{background:var(--bg-btn-hover)}
+        .save-pop b{display:block;font-size:13px}.save-pop small{display:block;font-size:11px;color:var(--text-muted);margin-top:1px}
         .score-action-btn { padding:6px 13px; border-radius:6px; border:none; cursor:pointer; font-size:12px; font-weight:600; transition:all 0.2s; }
         .score-action-btn.primary { background:linear-gradient(135deg,#3f7ee7,#1983e6); color:#fff; }
         .score-action-btn.primary:hover { transform:scale(1.03); box-shadow:0 0 10px rgba(63,126,231,0.4); }
@@ -385,7 +391,7 @@ window.FLUTE_SAMPLES={"v":2,"roots":[[60,0.95052,2.19995,"SUQzBAAAAAAAI1RTU0UAAA
         <label class="file-label">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Abrir MIDI
-            <input type="file" id="fileInput" accept=".mid,.midi">
+            <input type="file" id="fileInput" accept=".mid,.midi,.json">
         </label>
     </div>
 </header>
@@ -436,7 +442,7 @@ window.FLUTE_SAMPLES={"v":2,"roots":[[60,0.95052,2.19995,"SUQzBAAAAAAAI1RTU0UAAA
                 <p>Carregue um arquivo MIDI ou crie sua própria partitura · gaita de boca diatônica (Dó) de C4 a C7</p>
                 <div class="welcome-btns">
                     <label class="welcome-upload" for="welcomeFileInput">Carregar MIDI
-                        <input type="file" id="welcomeFileInput" accept=".mid,.midi" style="display:none">
+                        <input type="file" id="welcomeFileInput" accept=".mid,.midi,.json" style="display:none">
                     </label>
                     <button class="welcome-compose" onclick="switchView('score')">✏ Compor</button>
                 </div>
@@ -524,7 +530,7 @@ window.FLUTE_SAMPLES={"v":2,"roots":[[60,0.95052,2.19995,"SUQzBAAAAAAAI1RTU0UAAA
             <select id="scoreOctave"><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select>
             <div style="flex:1"></div>
             <button class="score-action-btn secondary" id="clearScoreBtn">🗑 Limpar</button>
-            <button class="score-action-btn secondary" id="exportMidiBtn">⬇ MIDI</button>
+            <div class="save-menu"><button class="score-action-btn secondary" id="exportMidiBtn" aria-haspopup="true" aria-expanded="false">⬇ Salvar ▾</button><div class="save-pop" id="savePop" hidden><button type="button" data-save="pdf"><b>🎼 Partitura</b><small>PDF com pauta e furos da gaita</small></button><button type="button" data-save="wav"><b>🔊 Áudio WAV</b><small>com o som real da gaita</small></button><button type="button" data-save="json"><b>{ } JSON</b><small>notas, vozes e andamento</small></button><button type="button" data-save="mid"><b>🎹 MIDI</b><small>arquivo .mid</small></button></div></div>
             <button class="score-action-btn primary" id="playScoreBtn">▶ Tocar</button>
         </div>
         <div class="score-body">
@@ -1374,8 +1380,8 @@ function noteX(midi,cw){ return (midi-state.lowestNote)*cw/(state.highestNote-st
 function noteW(midi,cw){ return cw/(state.highestNote-state.lowestNote+1); }
 
 // ======================== PLAYER EVENT LISTENERS ========================
-document.getElementById('fileInput').addEventListener('change',e=>{ if(e.target.files[0]) loadMidiFile(e.target.files[0]); });
-document.getElementById('welcomeFileInput').addEventListener('change',e=>{ if(e.target.files[0]) loadMidiFile(e.target.files[0]); });
+document.getElementById('fileInput').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; if(/\.json$/i.test(f.name)){ f.text().then(importScoreJSON); } else loadMidiFile(f); });
+document.getElementById('welcomeFileInput').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; if(/\.json$/i.test(f.name)){ f.text().then(importScoreJSON); } else loadMidiFile(f); });
 
 let dc=0;
 canvasContainer.addEventListener('dragenter',e=>{e.preventDefault();dc++;dropOverlay.classList.add('active');});
@@ -2324,7 +2330,6 @@ document.addEventListener('keydown',async e=>{
 // ---- UI buttons ----
 document.getElementById('addNoteBtn').addEventListener('click',()=>chordMode?addChord():addScoreNote());
 document.getElementById('playScoreBtn').addEventListener('click',playScore);
-document.getElementById('exportMidiBtn').addEventListener('click',exportMidi);
 document.getElementById('clearScoreBtn').addEventListener('click',()=>{
     scoreNotes.length=0; curBeat=1; selectedNoteIdx=-1;
     document.getElementById('noteBeat').value=1;
@@ -2397,6 +2402,193 @@ function exportMidi(){
     URL.revokeObjectURL(url);
     toast('MIDI exportado ('+voiceIds.length+' vozes)!','success');
 }
+
+// ======================== SALVAR: PARTITURA (PDF) · ÁUDIO (WAV) · MIDI · JSON ========================
+function downloadBlob(blob,name){ const url=URL.createObjectURL(blob), a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000); }
+
+// ---- JSON ----
+function scoreToJSON(){
+    const bpm=parseInt(document.getElementById('scoreBpm').value)||120;
+    return {app:'Gaita Bounce',formato:1,instrumento:'gaita de boca diatônica 10 furos, Dó (Richter)',
+        bpm,compasso:document.getElementById('scoreTimeSig').value,
+        vozes:voices.map(v=>({id:v.id,nome:v.name,cor:v.color})),
+        notas:[...scoreNotes].sort((a,b)=>a.beat-b.beat||a.midi-b.midi).map(n=>{
+            const f=(FING[n.midi]||[])[0];
+            return Object.assign({},n,{nota:noteDisplayName(n.midi,0),posicao:f?tabDesc(f):''});
+        })};
+}
+function exportJSON(){
+    if(!scoreNotes.length){ toast('Adicione notas primeiro'); return; }
+    downloadBlob(new Blob([JSON.stringify(scoreToJSON(),null,2)],{type:'application/json'}),'gaitabounce.json');
+    toast('JSON salvo ('+scoreNotes.length+' notas)!','success');
+}
+function importScoreJSON(text){
+    let d; try{ d=JSON.parse(text); }catch(e){ toast('JSON inválido'); return; }
+    const arr=Array.isArray(d)?d:(d.notas||d.notes);
+    if(!Array.isArray(arr)||!arr.length){ toast('Nenhuma nota no JSON'); return; }
+    if(Array.isArray(d.vozes)&&d.vozes.length) voices=d.vozes.map((v,i)=>({id:+v.id,name:v.nome||v.name||('Voz '+(i+1)),color:v.cor||v.color||VOICE_COLORS[i%VOICE_COLORS.length]}));
+    scoreNotes=arr.map(n=>({midi:Math.max(FL_LOW,Math.min(FL_HIGH,Math.round(+n.midi))),beat:Math.max(1,+n.beat||1),duration:+n.duration||1,velocity:Math.max(1,Math.min(127,+n.velocity||80)),
+        voice:+n.voice||0,accidental:+n.accidental||0,dotted:!!n.dotted,dotted2:!!n.dotted2,tied:!!n.tied,articulations:Array.isArray(n.articulations)?n.articulations:[],
+        color:n.color||(voices.find(v=>v.id===(+n.voice||0))||voices[0]).color}));
+    voices.forEach(v=>{ if(!voices.some(x=>x.id===activeVoice)) activeVoice=voices[0].id; });
+    scoreNotes.forEach(n=>{ if(!voices.some(v=>v.id===n.voice)){ const id=n.voice; voices.push({id,name:'Voz '+(id+1),color:VOICE_COLORS[id%VOICE_COLORS.length]}); } });
+    if(d.bpm) document.getElementById('scoreBpm').value=d.bpm;
+    if(d.compasso){ const s=document.getElementById('scoreTimeSig'); if([...s.options].some(o=>o.value===d.compasso)) s.value=d.compasso; }
+    try{ rebuildVoiceTabs(); }catch(e){}
+    selectedNoteIdx=-1; renderScoreList(); renderPianoRoll(); switchView('score');
+    toast('JSON aberto ('+scoreNotes.length+' notas)!','success');
+}
+
+// ---- WAV (renderizado offline com as gravações reais da gaita) ----
+async function exportWav(){
+    if(!scoreNotes.length){ toast('Adicione notas primeiro'); return; }
+    if(!SAMPLES){ toast('Amostras de som indisponíveis'); return; }
+    toast('Gerando WAV com o som da gaita…','success');
+    try{
+        const notes=scoreToPlayerNotes(), sr=44100, dur=Math.max(...notes.map(n=>n.endTime))+2.2;
+        const ac=new OfflineAudioContext(2,Math.ceil(dur*sr),sr);
+        const eng=new FluteEngine(ac,ac.destination,0.9); await eng.load();
+        notes.forEach(n=>eng.play(n.midi,n.startTime,Math.max(0.05,n.endTime-n.startTime),FLUTE_VIB,{vel:n.velocity}));
+        const buf=await ac.startRendering();
+        const L=buf.getChannelData(0), R=buf.numberOfChannels>1?buf.getChannelData(1):L, N=L.length;
+        let pk=0; for(let i=0;i<N;i++){ const a=Math.abs(L[i]),b=Math.abs(R[i]); if(a>pk) pk=a; if(b>pk) pk=b; }
+        const g=pk>0?0.92/pk:1, out=new DataView(new ArrayBuffer(44+N*4));
+        const ws=(o,s)=>{ for(let i=0;i<s.length;i++) out.setUint8(o+i,s.charCodeAt(i)); };
+        ws(0,'RIFF'); out.setUint32(4,36+N*4,true); ws(8,'WAVE'); ws(12,'fmt '); out.setUint32(16,16,true); out.setUint16(20,1,true); out.setUint16(22,2,true);
+        out.setUint32(24,sr,true); out.setUint32(28,sr*4,true); out.setUint16(32,4,true); out.setUint16(34,16,true); ws(36,'data'); out.setUint32(40,N*4,true);
+        let o=44; for(let i=0;i<N;i++){ out.setInt16(o,Math.max(-1,Math.min(1,L[i]*g))*32767,true); out.setInt16(o+2,Math.max(-1,Math.min(1,R[i]*g))*32767,true); o+=4; }
+        downloadBlob(new Blob([out.buffer],{type:'audio/wav'}),'gaitabounce.wav');
+        toast('WAV salvo!','success');
+    }catch(e){ console.error(e); toast('Não foi possível gerar o WAV'); }
+}
+
+// ---- PARTITURA (PDF: pauta + posição dos furos) ----
+function drawGClef(c,x,yB,sp){
+    // clave de Sol desenhada em curvas (sem depender de fontes): linha do Sol = 2ª linha de baixo para cima
+    const yG=yB-sp;
+    c.save(); c.lineCap='round'; c.lineJoin='round'; c.strokeStyle='#111'; c.lineWidth=sp*0.2;
+    c.beginPath();
+    c.moveTo(x+sp*0.55,yB+sp*1.15);
+    c.bezierCurveTo(x+sp*0.55,yB+sp*1.75,x-sp*0.55,yB+sp*1.7,x-sp*0.5,yB+sp*0.95);
+    c.bezierCurveTo(x-sp*0.45,yB+sp*0.25,x+sp*0.6,yB+sp*0.15,x+sp*0.95,yB-sp*0.8);
+    c.bezierCurveTo(x+sp*1.35,yB-sp*1.95,x+sp*0.7,yB-sp*3.1,x+sp*0.3,yB-sp*3.85);
+    c.bezierCurveTo(x+sp*0.05,yB-sp*4.35,x+sp*0.15,yB-sp*5.1,x+sp*0.4,yB-sp*5.35);
+    c.bezierCurveTo(x+sp*0.8,yB-sp*4.9,x+sp*0.95,yB-sp*3.7,x+sp*0.6,yB-sp*2.6);
+    c.bezierCurveTo(x+sp*0.25,yB-sp*1.5,x-sp*0.35,yB-sp*0.9,x-sp*0.55,yB-sp*1.5);
+    c.bezierCurveTo(x-sp*0.7,yB-sp*2.05,x-sp*0.3,yB-sp*2.55,x+sp*0.1,yB-sp*2.45);
+    c.bezierCurveTo(x+sp*0.55,yB-sp*2.3,x+sp*0.75,yB-sp*1.7,x+sp*0.45,yB-sp*1.2);
+    c.stroke();
+    c.fillStyle='#111'; c.beginPath(); c.arc(x+sp*0.55,yB+sp*1.35,sp*0.22,0,6.2832); c.fill();
+    c.restore();
+}
+function scoreToPDF(){
+    const ts=document.getElementById('scoreTimeSig').value, [num,den]=ts.split('/').map(Number), bpb=num*4/den, bpm=parseInt(document.getElementById('scoreBpm').value)||120;
+    const W=1240,H=1754,M=96,sp=13,CLEF=118,BEATW=106,barW=bpb*BEATW, barsPer=Math.max(1,Math.floor((W-2*M-CLEF)/barW)), sysH=sp*13+78;
+    const pages=[]; let cv,c,y;
+    const newPage=()=>{ cv=document.createElement('canvas'); cv.width=W; cv.height=H; c=cv.getContext('2d'); c.fillStyle='#fff'; c.fillRect(0,0,W,H); pages.push(cv); y=M; };
+    newPage();
+    c.fillStyle='#111'; c.font='800 46px Inter,Arial,sans-serif'; c.textBaseline='alphabetic'; c.fillText('Partitura · Gaita Bounce',M,y+34);
+    c.font='500 20px Inter,Arial,sans-serif'; c.fillStyle='#444'; c.fillText('Gaita de boca diatônica de 10 furos em Dó (Richter) · compasso '+ts+' · ♩ = '+bpm,M,y+70);
+    c.font='600 17px Inter,Arial,sans-serif'; c.fillStyle='#d2540c'; c.fillText('n↑ soprar',M,y+100); c.fillStyle='#12906a'; c.fillText('n↓ aspirar',M+120,y+100);
+    c.fillStyle='#444'; c.fillText('½ · 1 · 1½ = bend (tons)   OB = overblow   OD = overdraw',M+250,y+100);
+    y+=140;
+    const byVoice={}; scoreNotes.forEach(n=>{ (byVoice[n.voice]=byVoice[n.voice]||[]).push(n); });
+    Object.keys(byVoice).map(Number).sort((a,b)=>a-b).forEach((vid,vi)=>{
+        const arr=byVoice[vid].slice().sort((a,b)=>a.beat-b.beat||a.midi-b.midi), vname=(voices.find(v=>v.id===vid)||{}).name||('Voz '+(vid+1));
+        const total=Math.max(...arr.map(n=>n.beat-1+n.duration)), nBars=Math.max(1,Math.ceil(total/bpb-1e-6)), nSys=Math.ceil(nBars/barsPer);
+        // pausas (lacunas) por compasso
+        const rests=[]; let cur=0;
+        arr.forEach(n=>{ const s=n.beat-1; if(s>cur+0.01){ let g=s-cur, p=cur; while(g>0.01){ const nb=(Math.floor(p/bpb+1e-6)+1)*bpb, seg=Math.min(g,nb-p); let r=seg, q=p;
+            while(r>0.12){ const d=[4,2,1,0.5,0.25].find(v=>v<=r+1e-6)||0.25; rests.push({beat:q,dur:d}); q+=d; r-=d; } p+=seg; g-=seg; } } cur=Math.max(cur,s+n.duration); });
+        for(let s=0;s<nSys;s++){
+            if(y+sysH>H-M) newPage();
+            const yT=y+sp*3.6, yB=yT+4*sp, x0=M, b0=s*barsPer*bpb, nb=Math.min(barsPer,nBars-s*barsPer), xEnd=x0+CLEF+nb*barW;
+            if(s===0){ c.fillStyle='#111'; c.font='700 19px Inter,Arial,sans-serif'; c.fillText(vname,x0,yT-sp*2.2); }
+            c.strokeStyle='#111'; c.lineWidth=1.6;
+            for(let i=0;i<5;i++){ c.beginPath(); c.moveTo(x0,yT+i*sp); c.lineTo(xEnd,yT+i*sp); c.stroke(); }
+            c.lineWidth=1.8; c.beginPath(); c.moveTo(x0,yT); c.lineTo(x0,yB); c.stroke();
+            drawGClef(c,x0+30,yB,sp);
+            if(s===0){ c.fillStyle='#111'; c.textAlign='center'; c.font='800 '+Math.round(sp*2.1)+'px Georgia,serif'; c.fillText(String(num),x0+CLEF-26,yT+sp*1.9); c.fillText(String(den),x0+CLEF-26,yT+sp*3.9); c.textAlign='left'; }
+            for(let b=1;b<=nb;b++){ const bx=x0+CLEF+b*barW; c.lineWidth=b===nb&&s===nSys-1?3:1.6; c.beginPath(); c.moveTo(bx,yT); c.lineTo(bx,yB); c.stroke(); }
+            const X=beat0=>x0+CLEF+(beat0-b0)*BEATW+16, inSys=beat0=>beat0>=b0-1e-6&&beat0<b0+nb*bpb-1e-6;
+            // pausas
+            rests.filter(r=>inSys(r.beat)).forEach(r=>{ const rx=X(r.beat)+6; c.fillStyle='#111'; c.strokeStyle='#111'; c.lineWidth=sp*0.2;
+                if(r.dur>=4) c.fillRect(rx-sp*0.6,yT+sp,sp*1.2,sp*0.5);
+                else if(r.dur>=2) c.fillRect(rx-sp*0.6,yT+sp*1.5,sp*1.2,sp*0.5);
+                else if(r.dur>=1){ c.beginPath(); c.moveTo(rx-sp*0.3,yT+sp*0.7); c.lineTo(rx+sp*0.35,yT+sp*1.5); c.lineTo(rx-sp*0.3,yT+sp*2.3); c.lineTo(rx+sp*0.35,yT+sp*3.1); c.stroke(); }
+                else { c.beginPath(); c.moveTo(rx+sp*0.4,yT+sp*1.3); c.lineTo(rx-sp*0.2,yT+sp*3); c.stroke(); c.beginPath(); c.arc(rx-sp*0.2,yT+sp*1.5,sp*0.28,0,6.2832); c.fill(); } });
+            // notas
+            arr.forEach((n,ni)=>{
+                const b=n.beat-1; if(!inSys(b)) return;
+                const pc=n.midi%12, step=(Math.floor(n.midi/12)-1)*7+LET[pc], q=step-30, nx=X(b)+sp*1.2, ny=yB-q*sp/2, rx=sp*0.64, ry=sp*0.46;
+                const base=n.duration/(n.dotted2?1.75:n.dotted?1.5:1);
+                c.strokeStyle='#111'; c.lineWidth=1.8;
+                for(let L=-2;L>=q;L-=2){ const ly=yB-L*sp/2; c.beginPath(); c.moveTo(nx-sp*1.1,ly); c.lineTo(nx+sp*1.1,ly); c.stroke(); }
+                for(let L=10;L<=q;L+=2){ const ly=yB-L*sp/2; c.beginPath(); c.moveTo(nx-sp*1.1,ly); c.lineTo(nx+sp*1.1,ly); c.stroke(); }
+                if(ACC[pc]){ c.fillStyle='#111'; c.font='700 '+Math.round(sp*2.1)+'px "Segoe UI Symbol","Noto Sans Symbols",Arial,sans-serif'; c.textAlign='right'; c.fillText(ACC[pc],nx-rx-3,ny+sp*0.7); c.textAlign='left'; }
+                c.save(); c.translate(nx,ny); c.rotate(-0.35); c.beginPath(); c.ellipse(0,0,rx,ry,0,0,6.2832);
+                if(base>=2){ c.lineWidth=2.4; c.strokeStyle='#111'; c.stroke(); } else { c.fillStyle='#111'; c.fill(); } c.restore();
+                const up=q<4;
+                if(base<4){ const sx=up?nx+rx-1:nx-rx+1, sy2=ny+(up?-sp*3.6:sp*3.6); c.lineWidth=1.8; c.strokeStyle='#111'; c.beginPath(); c.moveTo(sx,ny); c.lineTo(sx,sy2); c.stroke();
+                    const fl=base>=1?0:base>=0.5?1:base>=0.25?2:3; c.lineWidth=2.4;
+                    for(let k=0;k<fl;k++){ const fy=sy2+(up?1:-1)*k*sp*0.75; c.beginPath(); c.moveTo(sx,fy); c.quadraticCurveTo(sx+sp*1.1,fy+(up?sp*0.9:-sp*0.9),sx+sp*0.8,fy+(up?sp*2:-sp*2)); c.stroke(); } }
+                if(n.dotted||n.dotted2){ const dy=(q%2===0)?-sp*0.5:0; c.fillStyle='#111'; c.beginPath(); c.arc(nx+rx+sp*0.55,ny+dy,sp*0.2,0,6.2832); c.fill(); if(n.dotted2){ c.beginPath(); c.arc(nx+rx+sp*1.1,ny+dy,sp*0.2,0,6.2832); c.fill(); } }
+                (n.articulations||[]).forEach(a=>{ const ay=up?ny+sp*0.2+ (base<4?0:0):ny; c.fillStyle='#111'; c.textAlign='center';
+                    if(a==='staccato'||a==='staccatissimo'){ c.beginPath(); c.arc(nx,up?ny+sp*1.2:ny-sp*1.2,sp*0.2,0,6.2832); c.fill(); }
+                    else if(a==='accent'||a==='marcato'){ c.font='800 '+Math.round(sp*1.5)+'px Arial,sans-serif'; c.fillText(a==='marcato'?'^':'>',nx,up?ny+sp*2.1:ny-sp*1.2); }
+                    else if(a==='tenuto'){ c.fillRect(nx-sp*0.4,(up?ny+sp*1.2:ny-sp*1.2),sp*0.8,sp*0.18); }
+                    else if(a==='fermata'){ c.beginPath(); c.arc(nx,ny-sp*1.8,sp*0.8,Math.PI,0); c.stroke(); c.beginPath(); c.arc(nx,ny-sp*1.8,sp*0.18,0,6.2832); c.fill(); }
+                    c.textAlign='left'; });
+                if(n.tied){ const nxt=arr.find((o,j)=>j>ni&&o.midi===n.midi&&Math.abs(o.beat-(n.beat+n.duration))<0.05);
+                    const tx=nxt&&inSys(nxt.beat-1)?X(nxt.beat-1)+sp*1.2:Math.min(xEnd-6,nx+BEATW*Math.max(1,n.duration)); const ty=ny+(up?sp*0.9:-sp*0.9);
+                    c.lineWidth=2; c.beginPath(); c.moveTo(nx,ty); c.quadraticCurveTo((nx+tx)/2,ty+(up?sp*1.2:-sp*1.2),tx,ty); c.stroke(); }
+                // posição na gaita, abaixo da pauta
+                const f=(FING[n.midi]||[])[0]; if(f){ c.font='800 '+Math.round(sp*1.35)+'px Inter,Arial,sans-serif'; c.textAlign='center'; c.fillStyle=f.d==='b'?'#d2540c':'#12906a'; c.fillText(tabText(f),nx,yB+sp*4.6); c.textAlign='left'; }
+            });
+            y+=sysH;
+        }
+        y+=sp*1.5;
+    });
+    pages.forEach((p,i)=>{ const g=p.getContext('2d'); g.fillStyle='#777'; g.font='500 16px Inter,Arial,sans-serif'; g.textAlign='center'; g.fillText('Gaita Bounce · página '+(i+1)+' de '+pages.length,W/2,H-46); });
+    return pages;
+}
+function pagesToPDF(pages){
+    const enc=new TextEncoder(), parts=[], offs=[]; let len=0;
+    const put=x=>{ const u=typeof x==='string'?enc.encode(x):x; parts.push(u); len+=u.length; };
+    const obj=(id,body)=>{ offs[id]=len; put(id+' 0 obj\n'); put(body); put('\nendobj\n'); };
+    put('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+    const n=pages.length, pw=595.28, ph=841.89;
+    obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
+    obj(2,'<< /Type /Pages /Kids ['+pages.map((_,i)=>(3+i*3)+' 0 R').join(' ')+'] /Count '+n+' >>');
+    pages.forEach((cv,i)=>{
+        const b64=cv.toDataURL('image/jpeg',0.92).split(',')[1], bin=atob(b64), jpg=new Uint8Array(bin.length); for(let k=0;k<bin.length;k++) jpg[k]=bin.charCodeAt(k);
+        const pid=3+i*3, cid=pid+1, iid=pid+2, content='q '+pw+' 0 0 '+ph+' 0 0 cm /Im0 Do Q';
+        obj(pid,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+pw+' '+ph+'] /Resources << /XObject << /Im0 '+iid+' 0 R >> >> /Contents '+cid+' 0 R >>');
+        obj(cid,'<< /Length '+content.length+' >>\nstream\n'+content+'\nendstream');
+        offs[iid]=len; put(iid+' 0 obj\n<< /Type /XObject /Subtype /Image /Width '+cv.width+' /Height '+cv.height+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpg.length+' >>\nstream\n'); put(jpg); put('\nendstream\nendobj\n');
+    });
+    const xr=len, total=3+n*3; let x='xref\n0 '+total+'\n0000000000 65535 f \n';
+    for(let i=1;i<total;i++) x+=String(offs[i]).padStart(10,'0')+' 00000 n \n';
+    put(x+'trailer\n<< /Size '+total+' /Root 1 0 R >>\nstartxref\n'+xr+'\n%%EOF');
+    const out=new Uint8Array(len); let o=0; parts.forEach(u=>{ out.set(u,o); o+=u.length; });
+    return new Blob([out],{type:'application/pdf'});
+}
+function exportScorePDF(){
+    if(!scoreNotes.length){ toast('Adicione notas primeiro'); return; }
+    try{ const pages=scoreToPDF(); downloadBlob(pagesToPDF(pages),'partitura-gaitabounce.pdf'); toast('Partitura salva ('+pages.length+(pages.length>1?' páginas':' página')+')!','success'); }
+    catch(e){ console.error(e); toast('Não foi possível gerar a partitura'); }
+}
+
+// ---- menu "Salvar" ----
+(function(){
+    const btn=document.getElementById('exportMidiBtn'), pop=document.getElementById('savePop');
+    const close=()=>{ pop.hidden=true; btn.setAttribute('aria-expanded','false'); };
+    btn.addEventListener('click',e=>{ e.stopPropagation(); pop.hidden=!pop.hidden; btn.setAttribute('aria-expanded',String(!pop.hidden)); });
+    document.addEventListener('click',e=>{ if(!pop.hidden&&!pop.contains(e.target)) close(); });
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape') close(); });
+    const acts={pdf:exportScorePDF,wav:exportWav,json:exportJSON,mid:exportMidi};
+    pop.querySelectorAll('button[data-save]').forEach(b=>b.addEventListener('click',()=>{ close(); acts[b.dataset.save](); }));
+})();
 
 // ======================== THEME TOGGLE ========================
 const themeBtn=document.getElementById('themeBtn');
