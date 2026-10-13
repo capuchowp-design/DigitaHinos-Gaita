@@ -1,0 +1,531 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Guia Gaita Bounce APK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono&display=swap">
+<style>
+/* Layout: guia de uma coluna, passos numerados reais, blocos de código com botão Copiar */
+:root{--bg:#f6f9fd;--fg:#1b2f4a;--mute:#566a85;--line:#d3e0ef;--card:#ffffff;--acc:#2f6fb5;--gold:#6db3f2;--code:#eaf1f9;--warn:#8a4b00;
+--d:'Bricolage Grotesque',system-ui,sans-serif;--b:'IBM Plex Sans',system-ui,sans-serif;--m:'IBM Plex Mono',ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#140f1f;--fg:#ece6f6;--mute:#a597bd;--line:#2f2543;--card:#1b1429;--acc:#b79cff;--gold:#6db3f2;--code:#0f0a18;--warn:#f2b45c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#140f1f;--fg:#ece6f6;--mute:#a597bd;--line:#2f2543;--card:#1b1429;--acc:#b79cff;--gold:#6db3f2;--code:#0f0a18;--warn:#f2b45c;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--b);font-size:16px;line-height:1.6;padding-inline:16px;padding-block:24px 64px}
+main{max-width:760px;margin:0 auto;min-width:0}
+h1{font-family:var(--d);font-weight:800;font-size:clamp(30px,7vw,44px);line-height:1.05;margin:0 0 8px;text-wrap:balance}
+h2{font-family:var(--d);font-weight:800;font-size:24px;margin:44px 0 10px;padding-top:14px;border-top:3px solid var(--gold);text-wrap:balance}
+h3{font-family:var(--d);font-size:17px;margin:22px 0 4px}
+p,li{max-width:68ch} .lead{color:var(--mute);font-size:17px}
+a{color:var(--acc)} code.i{font-family:var(--m);font-size:.88em;background:var(--code);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+.blk{margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--card);min-width:0}
+.bh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 8px 6px 12px;border-bottom:1px solid var(--line)}
+.bn{font-family:var(--m);font-size:13px;overflow-wrap:anywhere}
+.cp{font:600 14px var(--b);background:var(--acc);color:var(--bg);border:0;border-radius:6px;padding:8px 14px;min-height:40px;cursor:pointer;flex:none}
+pre{margin:0;padding:12px;background:var(--code);overflow:auto;max-height:340px;font-family:var(--m);font-size:12.5px;line-height:1.5;border-radius:0 0 8px 8px;white-space:pre}
+.steps{counter-reset:s;list-style:none;padding:0;display:grid;gap:12px}
+.steps>li{counter-increment:s;position:relative;padding:12px 14px 12px 52px;background:var(--card);border:1px solid var(--line);border-radius:8px;min-width:0}
+.steps>li::before{content:counter(s);position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:50%;background:var(--gold);color:#241a33;font:800 15px var(--d);display:grid;place-items:center}
+.note{border-left:4px solid var(--gold);padding:8px 14px;background:var(--card);border-radius:0 8px 8px 0;margin:14px 0}
+.warn{border-left-color:var(--warn)} .warn b{color:var(--warn)}
+table{border-collapse:collapse;width:100%;font-size:14px} td,th{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.tw{overflow-x:auto} ul{padding-left:20px}
+@media (prefers-reduced-motion:no-preference){.cp{transition:opacity .15s}.cp:active{opacity:.7}}
+</style>
+<main>
+<h1>Gaita Bounce: do GitHub ao APKPure</h1>
+<p class="lead">Mesmo processo do Clarinet Bounce: você já tem a chave de assinatura e já sabe usar o Codespaces. Arquivos grandes (index.html e imagens) chegaram como anexos; os textos curtos estão aqui com botão Copiar.</p>
+
+<div class="note warn"><b>Suposições (confira antes de começar).</b> Repositório <code class="i">gaitabounce</code> no usuário <code class="i">capuchowp</code>. Pacote <code class="i">io.github.capuchowp.gaitabounce</code>; o pacote não muda depois de publicado. Reaproveitei a mesma chave do Clarinet Bounce (mesmos 3 Secrets). Usar a mesma chave em vários apps é permitido. Link da política: <code class="i">https://capuchowp.github.io/gaitabounce/privacy.html</code>. Se o usuário ou o nome do repositório forem outros, ajuste <code class="i">capacitor.config.json</code> e <code class="i">privacy.html</code>.</div>
+
+<h2>Checklist na ordem</h2>
+<ol class="steps">
+<li><b>Repositório.</b> Abra o repositório <code class="i">gaitabounce</code> no GitHub. Em Settings › Pages, publique o branch <code class="i">main</code>, pasta <code class="i">/ (root)</code>.</li>
+<li><b>Subir os anexos.</b> Extraia <code class="i">gaitabounce-arquivos.zip</code> no app Arquivos. No repositório: Add file › Upload files e escolha tudo: index.html, sw.js, privacy.html, capacitor.config.json, package.json, version.txt, icon-foreground.png e icon-background.png. Commit.</li>
+<li><b>Criar 4 arquivos por colagem</b> (seção abaixo): Add file › Create new file, digite o nome exato (as barras criam as pastas), cole e faça Commit. Ordem: <code class="i">.gitignore</code>, <code class="i">.github/workflows/build-apk.yml</code>, <code class="i">scripts/prepare_web.py</code>, <code class="i">scripts/android_setup.py</code>.</li>
+<li><b>Cadastrar os 3 Secrets neste repositório</b> (Settings › Secrets and variables › Actions). Copie os valores do repositório do Clarinet Bounce (ou do que você usou lá): <code class="i">KEYSTORE_BASE64</code> (o texto do release.keystore.b64), <code class="i">KEYSTORE_PASSWORD</code> (sua senha) e <code class="i">KEY_ALIAS</code> (o mesmo alias que você usou ao criar a chave). Se você não tem mais o texto base64 copiado, veja o quadro "Recuperar o texto da chave".</li>
+<li><b>Gerar o APK:</b> Actions › Gerar APK assinado › Run workflow. Baixe o APK em Releases (rascunho) e o <code class="i">sign-report.txt</code>.</li>
+<li><b>Conferir a assinatura:</b> a linha <code class="i">Signer #1 certificate SHA-256 digest</code> deve ser igual à do APK do Clarinet Bounce (mesma chave).</li>
+<li><b>Instalar e testar</b> (lista abaixo), tirar de 2 a 4 capturas e enviar ao APKPure.</li>
+</ol>
+
+<div class="note"><b>Recuperar o texto da chave.</b> Se precisar, abra o Codespace onde você criou a chave (ou o do repositório <code class="i">clarinetbounce</code>), rode <code class="i">base64 -w 0 release.keystore &gt; release.keystore.b64</code> e depois <code class="i">code release.keystore.b64</code>. Se a chave não estiver mais lá, use o <code class="i">release.keystore</code> que você baixou: envie-o para o Codespace (arrastando para a lista de arquivos) e rode o mesmo comando. Nunca envie esse arquivo ao repositório.</div>
+
+<h2>Arquivos para colar</h2>
+<p>Os 4 primeiros blocos são para colar. Os outros 4 já vão no zip e estão aqui só para consulta. Na <code class="i">sw.js</code> a mudança é <code class="i">gaita-bounce-v2</code> para <code class="i">gaita-bounce-v3</code> (já feita no anexo).</p>
+<div class="blk"><div class="bh"><span class="bn">.gitignore</span><button class="cp" data-t="f0">Copiar</button></div><pre id="f0"><code>node_modules/
+www/
+android/
+*.keystore
+*.jks
+*.b64
+keystore*
+</code></pre></div><div class="blk"><div class="bh"><span class="bn">.github/workflows/build-apk.yml</span><button class="cp" data-t="f1">Copiar</button></div><pre id="f1"><code>name: Gerar APK assinado
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Conferir os 3 Secrets
+        run: |
+          ok=1
+          for v in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS; do
+            if [ -z &quot;${!v}&quot; ]; then echo &quot;::error::Falta o Secret $v (Settings &gt; Secrets and variables &gt; Actions)&quot;; ok=0; fi
+          done
+          [ &quot;$ok&quot; = &quot;1&quot; ] || exit 1
+
+      - name: Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: &quot;3.12&quot;
+
+      - name: Instalar dependências
+        run: |
+          npm install --no-audit --no-fund
+          python -m pip install pillow
+
+      - name: Montar o app (www)
+        run: python scripts/prepare_web.py
+
+      - name: Criar o projeto Android
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Ajustar versão, ícones e tela de abertura
+        run: python scripts/android_setup.py
+
+      - name: Compilar (release)
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Alinhar e assinar com a sua chave
+        run: |
+          set -e
+          source version.txt
+          BT=$(ls -d &quot;$ANDROID_HOME&quot;/build-tools/* | sort -V | tail -1)
+          echo &quot;Build-tools: $BT&quot;
+          echo &quot;$KEYSTORE_BASE64&quot; | base64 -d &gt; &quot;$RUNNER_TEMP/release.keystore&quot;
+          UNSIGNED=$(ls android/app/build/outputs/apk/release/*.apk | head -1)
+          OUT=&quot;GaitaBounce-${VERSION_NAME}-${VERSION_CODE}.apk&quot;
+          &quot;$BT/zipalign&quot; -p -f 4 &quot;$UNSIGNED&quot; aligned.apk
+          &quot;$BT/apksigner&quot; sign --ks &quot;$RUNNER_TEMP/release.keystore&quot; --ks-key-alias &quot;$KEY_ALIAS&quot; \
+            --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEYSTORE_PASSWORD --out &quot;$OUT&quot; aligned.apk
+          &quot;$BT/apksigner&quot; verify --verbose --print-certs &quot;$OUT&quot; | tee sign-report.txt
+          echo &quot;---- Impressão digital (SHA-256) da chave no arquivo da chave ----&quot; | tee -a sign-report.txt
+          keytool -list -v -keystore &quot;$RUNNER_TEMP/release.keystore&quot; -alias &quot;$KEY_ALIAS&quot; -storepass &quot;$KEYSTORE_PASSWORD&quot; | grep -E &quot;SHA256|SHA-256&quot; | tee -a sign-report.txt
+          echo &quot;---- Pacote ----&quot; | tee -a sign-report.txt
+          &quot;$BT/aapt&quot; dump badging &quot;$OUT&quot; | grep -E &quot;^package:|sdkVersion|targetSdkVersion|uses-permission&quot; | tee -a sign-report.txt || true
+          rm -f &quot;$RUNNER_TEMP/release.keystore&quot; aligned.apk
+          echo &quot;APK_FILE=$OUT&quot; &gt;&gt; &quot;$GITHUB_ENV&quot;
+
+      - name: Guardar o APK (aba Actions &gt; Artifacts)
+        uses: actions/upload-artifact@v4
+        with:
+          name: GaitaBounce-apk
+          path: |
+            GaitaBounce-*.apk
+            sign-report.txt
+          retention-days: 30
+
+      - name: Criar rascunho de Release com o APK (download direto no celular)
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          source version.txt
+          gh release create &quot;apk-${VERSION_NAME}-build${GITHUB_RUN_NUMBER}&quot; &quot;$APK_FILE&quot; sign-report.txt \
+            --draft --title &quot;Gaita Bounce ${VERSION_NAME} (build ${GITHUB_RUN_NUMBER})&quot; \
+            --notes &quot;APK assinado. Confira sign-report.txt.&quot;
+</code></pre></div><div class="blk"><div class="bh"><span class="bn">scripts/prepare_web.py</span><button class="cp" data-t="f2">Copiar</button></div><pre id="f2"><code>#!/usr/bin/env python3
+&quot;&quot;&quot;Monta a pasta www/ (o app que vai dentro do APK) a partir dos arquivos do repositório.
+
+- Copia index.html, manifest.json, privacy.html e os ícones (NÃO copia sw.js: no APK não precisa).
+- Se as bibliotecas estiverem instaladas (npm install), usa Tone.js e a fonte Inter LOCAIS (funciona offline).
+  Se não estiverem, mantém os links da internet que já estão no index.html.
+- Esconde o botão PIX no APK (defina SHOW_PIX=1 para mostrar).
+&quot;&quot;&quot;
+import glob, os, re, shutil, sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+WWW = os.path.join(ROOT, &quot;www&quot;)
+VENDOR = os.path.join(WWW, &quot;vendor&quot;)
+
+if os.path.isdir(WWW):
+    shutil.rmtree(WWW)
+os.makedirs(VENDOR)
+
+for name in [&quot;index.html&quot;, &quot;manifest.json&quot;, &quot;privacy.html&quot;]:
+    src = os.path.join(ROOT, name)
+    if os.path.exists(src):
+        shutil.copy(src, WWW)
+for f in glob.glob(os.path.join(ROOT, &quot;*.png&quot;)):
+    shutil.copy(f, WWW)
+
+index_path = os.path.join(WWW, &quot;index.html&quot;)
+html = open(index_path, encoding=&quot;utf-8&quot;).read()
+
+# 1) Tone.js local
+tone_src = os.path.join(ROOT, &quot;node_modules&quot;, &quot;tone&quot;, &quot;build&quot;, &quot;Tone.js&quot;)
+tone_tag = &#x27;&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js&quot;&gt;&lt;/script&gt;&#x27;
+if os.path.exists(tone_src) and tone_tag in html:
+    shutil.copy(tone_src, os.path.join(VENDOR, &quot;Tone.js&quot;))
+    html = html.replace(tone_tag, &#x27;&lt;script src=&quot;vendor/Tone.js&quot;&gt;&lt;/script&gt;&#x27;)
+    print(&quot;Tone.js: local&quot;)
+else:
+    print(&quot;AVISO: Tone.js local não encontrado; usando o link da internet.&quot;)
+
+# 2) Fonte Inter local
+font_files = glob.glob(os.path.join(ROOT, &quot;node_modules&quot;, &quot;@fontsource-variable&quot;, &quot;inter&quot;, &quot;files&quot;, &quot;inter-latin-wght-normal.woff2&quot;))
+import_line = &quot;@import url(&#x27;https://cdn.jsdelivr.net/fontsource/fonts/inter@5/latin.css&#x27;);&quot;
+if font_files and import_line in html:
+    shutil.copy(font_files[0], os.path.join(VENDOR, &quot;inter-latin-wght-normal.woff2&quot;))
+    face = (&quot;@font-face{font-family:&#x27;Inter&#x27;;font-style:normal;font-weight:100 900;font-display:swap;&quot;
+            &quot;src:url(&#x27;vendor/inter-latin-wght-normal.woff2&#x27;) format(&#x27;woff2&#x27;);}&quot;)
+    html = html.replace(import_line, face)
+    print(&quot;Inter: local&quot;)
+else:
+    print(&quot;AVISO: fonte Inter local não encontrada; usando o link da internet.&quot;)
+
+# 3) PIX escondido no APK
+if os.environ.get(&quot;SHOW_PIX&quot;) != &quot;1&quot;:
+    style = &quot;&lt;style&gt;#btnPix{display:none!important}&lt;/style&gt;&quot;
+    assert &quot;&lt;/head&gt;&quot; in html
+    html = html.replace(&quot;&lt;/head&gt;&quot;, style + &quot;\n&lt;/head&gt;&quot;, 1)
+    print(&quot;Botão PIX: escondido no APK&quot;)
+
+open(index_path, &quot;w&quot;, encoding=&quot;utf-8&quot;).write(html)
+print(&quot;www pronto:&quot;, sorted(os.listdir(WWW)))
+</code></pre></div><div class="blk"><div class="bh"><span class="bn">scripts/android_setup.py</span><button class="cp" data-t="f3">Copiar</button></div><pre id="f3"><code>#!/usr/bin/env python3
+&quot;&quot;&quot;Ajusta o projeto Android gerado pelo Capacitor (rodar depois de `npx cap add android` e `npx cap sync`).
+
+Faz: versão do app, ícones (a partir de icon-512x512.png, icon-foreground.png e icon-background.png), tela de abertura própria (sem logo de terceiros).
+&quot;&quot;&quot;
+import glob, os, re, sys
+from PIL import Image, ImageDraw
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ANDROID = os.path.join(ROOT, &quot;android&quot;)
+RES = os.path.join(ANDROID, &quot;app&quot;, &quot;src&quot;, &quot;main&quot;, &quot;res&quot;)
+BG_PNG = os.path.join(ROOT, &quot;icon-background.png&quot;)
+if os.path.exists(BG_PNG):
+    _bg = Image.open(BG_PNG).convert(&quot;RGB&quot;)
+    _c = _bg.resize((1, 1), Image.LANCZOS).getpixel((0, 0))
+else:
+    _bg, _c = None, (247, 190, 40)
+GOLD = (_c[0], _c[1], _c[2], 255)
+GOLD_HEX = &quot;#%02X%02X%02X&quot; % _c
+
+def die(msg):
+    print(&quot;ERRO:&quot;, msg)
+    sys.exit(1)
+
+# ---------- versão ----------
+ver = {}
+for line in open(os.path.join(ROOT, &quot;version.txt&quot;), encoding=&quot;utf-8&quot;):
+    if &quot;=&quot; in line:
+        k, v = line.strip().split(&quot;=&quot;, 1)
+        ver[k.strip()] = v.strip()
+name, code = ver.get(&quot;VERSION_NAME&quot;), ver.get(&quot;VERSION_CODE&quot;)
+if not name or not code or not code.isdigit():
+    die(&quot;version.txt precisa ter VERSION_NAME=1.0.0 e VERSION_CODE=1 (número inteiro)&quot;)
+gradle = os.path.join(ANDROID, &quot;app&quot;, &quot;build.gradle&quot;)
+if not os.path.exists(gradle):
+    die(&quot;android/app/build.gradle não encontrado&quot;)
+g = open(gradle, encoding=&quot;utf-8&quot;).read()
+g, n1 = re.subn(r&quot;versionCode\s+\d+&quot;, &quot;versionCode &quot; + code, g)
+g, n2 = re.subn(r&#x27;versionName\s+&quot;[^&quot;]*&quot;&#x27;, &#x27;versionName &quot;&#x27; + name + &#x27;&quot;&#x27;, g)
+if n1 != 1 or n2 != 1:
+    die(&quot;não consegui trocar versionCode/versionName no build.gradle (%d/%d)&quot; % (n1, n2))
+open(gradle, &quot;w&quot;, encoding=&quot;utf-8&quot;).write(g)
+print(&quot;Versão:&quot;, name, &quot;(código %s)&quot; % code)
+
+# ---------- ícones ----------
+icon = Image.open(os.path.join(ROOT, &quot;icon-512x512.png&quot;)).convert(&quot;RGBA&quot;)
+fg = Image.open(os.path.join(ROOT, &quot;icon-foreground.png&quot;)).convert(&quot;RGBA&quot;)
+legacy = {&quot;mdpi&quot;: 48, &quot;hdpi&quot;: 72, &quot;xhdpi&quot;: 96, &quot;xxhdpi&quot;: 144, &quot;xxxhdpi&quot;: 192}
+adaptive = {&quot;mdpi&quot;: 108, &quot;hdpi&quot;: 162, &quot;xhdpi&quot;: 216, &quot;xxhdpi&quot;: 324, &quot;xxxhdpi&quot;: 432}
+
+def circle(im):
+    mask = Image.new(&quot;L&quot;, im.size, 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, im.size[0] - 1, im.size[1] - 1), fill=255)
+    out = Image.new(&quot;RGBA&quot;, im.size, (0, 0, 0, 0))
+    out.paste(im, (0, 0), mask)
+    return out
+
+for dens, px in legacy.items():
+    d = os.path.join(RES, &quot;mipmap-&quot; + dens)
+    os.makedirs(d, exist_ok=True)
+    sq = icon.resize((px, px), Image.LANCZOS)
+    sq.save(os.path.join(d, &quot;ic_launcher.png&quot;), optimize=True)
+    # redondo: fundo dourado cheio recortado em círculo
+    full = _bg.resize((px, px), Image.LANCZOS).convert(&quot;RGBA&quot;) if _bg else Image.new(&quot;RGBA&quot;, (px, px), GOLD)
+    full.alpha_composite(fg.resize((px, px), Image.LANCZOS))
+    circle(full).save(os.path.join(d, &quot;ic_launcher_round.png&quot;), optimize=True)
+for dens, px in adaptive.items():
+    d = os.path.join(RES, &quot;mipmap-&quot; + dens)
+    os.makedirs(d, exist_ok=True)
+    fg.resize((px, px), Image.LANCZOS).save(os.path.join(d, &quot;ic_launcher_foreground.png&quot;), optimize=True)
+
+if _bg:
+    for dens, px in adaptive.items():
+        _bg.resize((px, px), Image.LANCZOS).save(os.path.join(RES, &quot;mipmap-&quot; + dens, &quot;ic_launcher_background.png&quot;), optimize=True)
+os.makedirs(os.path.join(RES, &quot;values&quot;), exist_ok=True)
+open(os.path.join(RES, &quot;values&quot;, &quot;ic_launcher_background.xml&quot;), &quot;w&quot;, encoding=&quot;utf-8&quot;).write(
+    &#x27;&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;\n&lt;resources&gt;\n    &lt;color name=&quot;ic_launcher_background&quot;&gt;%s&lt;/color&gt;\n&lt;/resources&gt;\n&#x27; % GOLD_HEX)
+bg_line = (&#x27;    &lt;background android:drawable=&quot;@mipmap/ic_launcher_background&quot;/&gt;\n&#x27; if _bg
+           else &#x27;    &lt;background android:drawable=&quot;@color/ic_launcher_background&quot;/&gt;\n&#x27;)
+adaptive_xml = (&#x27;&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;\n&#x27;
+                &#x27;&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;\n&#x27;
+                + bg_line +
+                &#x27;    &lt;foreground android:drawable=&quot;@mipmap/ic_launcher_foreground&quot;/&gt;\n&#x27;
+                &#x27;&lt;/adaptive-icon&gt;\n&#x27;)
+d = os.path.join(RES, &quot;mipmap-anydpi-v26&quot;)
+os.makedirs(d, exist_ok=True)
+for fn in (&quot;ic_launcher.xml&quot;, &quot;ic_launcher_round.xml&quot;):
+    open(os.path.join(d, fn), &quot;w&quot;, encoding=&quot;utf-8&quot;).write(adaptive_xml)
+# remove o ícone vetorial padrão do modelo (se existir) para não conflitar
+for stale in glob.glob(os.path.join(RES, &quot;drawable*&quot;, &quot;ic_launcher_foreground.xml&quot;)):
+    os.remove(stale)
+for stale in glob.glob(os.path.join(RES, &quot;drawable*&quot;, &quot;ic_launcher_background.xml&quot;)):
+    os.remove(stale)
+print(&quot;Ícones: ok&quot;)
+
+# ---------- tela de abertura (substitui a imagem padrão do modelo) ----------
+splashes = glob.glob(os.path.join(RES, &quot;drawable*&quot;, &quot;splash*.png&quot;))
+for f in splashes:
+    w, h = Image.open(f).size
+    canvas = Image.new(&quot;RGBA&quot;, (w, h), GOLD)
+    side = int(min(w, h) * 0.42)
+    logo = icon.resize((side, side), Image.LANCZOS)
+    canvas.alpha_composite(logo, ((w - side) // 2, (h - side) // 2))
+    canvas.convert(&quot;RGB&quot;).save(f, optimize=True)
+print(&quot;Tela de abertura: %d imagem(ns) trocada(s)&quot; % len(splashes))
+styles = os.path.join(RES, &quot;values&quot;, &quot;styles.xml&quot;)
+if os.path.exists(styles):
+    s = open(styles, encoding=&quot;utf-8&quot;).read()
+    s2 = s.replace(&quot;@drawable/splash&quot;, &quot;@color/ic_launcher_background&quot;)
+    if s2 != s:
+        open(styles, &quot;w&quot;, encoding=&quot;utf-8&quot;).write(s2)
+        print(&quot;styles.xml: fundo da abertura trocado&quot;)
+print(&quot;Pronto.&quot;)
+</code></pre></div><div class="blk"><div class="bh"><span class="bn">capacitor.config.json</span><button class="cp" data-t="f4">Copiar</button></div><pre id="f4"><code>{
+  &quot;appId&quot;: &quot;io.github.capuchowp.gaitabounce&quot;,
+  &quot;appName&quot;: &quot;Gaita Bounce&quot;,
+  &quot;webDir&quot;: &quot;www&quot;,
+  &quot;backgroundColor&quot;: &quot;#0b1118&quot;,
+  &quot;server&quot;: {
+    &quot;androidScheme&quot;: &quot;https&quot;
+  }
+}
+</code></pre></div><div class="blk"><div class="bh"><span class="bn">package.json</span><button class="cp" data-t="f5">Copiar</button></div><pre id="f5"><code>{
+  &quot;name&quot;: &quot;gaitabounce&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;description&quot;: &quot;Gaita Bounce - visualizador MIDI com gaita de boca&quot;,
+  &quot;dependencies&quot;: {
+    &quot;@capacitor/android&quot;: &quot;^7.0.0&quot;,
+    &quot;@capacitor/core&quot;: &quot;^7.0.0&quot;,
+    &quot;@capacitor/filesystem&quot;: &quot;^7.0.0&quot;,
+    &quot;@capacitor/share&quot;: &quot;^7.0.0&quot;,
+    &quot;@fontsource-variable/inter&quot;: &quot;^5.0.0&quot;,
+    &quot;tone&quot;: &quot;14.8.49&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@capacitor/cli&quot;: &quot;^7.0.0&quot;
+  }
+}
+</code></pre></div><div class="blk"><div class="bh"><span class="bn">version.txt</span><button class="cp" data-t="f6">Copiar</button></div><pre id="f6"><code>VERSION_NAME=1.0.0
+VERSION_CODE=1
+</code></pre></div><div class="blk"><div class="bh"><span class="bn">privacy.html</span><button class="cp" data-t="f7">Copiar</button></div><pre id="f7"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;pt-BR&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;title&gt;Gaita Bounce – Política de Privacidade / Privacy Policy&lt;/title&gt;
+&lt;style&gt;
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:720px;margin:0 auto;padding:20px 16px 48px;line-height:1.6;color:#251b38;background:#faf7ff}
+  h1{font-size:24px;color:#5b2dc4;margin-bottom:4px}
+  h2{font-size:18px;margin-top:28px;color:#3b177a}
+  hr{border:0;border-top:2px solid #f7be28;margin:36px 0}
+  small,.muted{color:#6b5d82}
+  a{color:#5b2dc4}
+  li{margin:4px 0}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;h1&gt;Gaita Bounce – Política de Privacidade&lt;/h1&gt;
+&lt;p class=&quot;muted&quot;&gt;Última atualização: 12 de outubro de 2026 · &lt;a href=&quot;#en&quot;&gt;Read in English&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt;Resumo&lt;/h2&gt;
+&lt;p&gt;O Gaita Bounce &lt;strong&gt;não coleta, não vende e não compartilha dados pessoais&lt;/strong&gt;. Não tem cadastro, login, anúncios, rastreadores nem análise de uso.&lt;/p&gt;
+
+&lt;h2&gt;O que fica no seu aparelho&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Suas preferências (como o tema claro/escuro) ficam &lt;strong&gt;somente no armazenamento do próprio aplicativo&lt;/strong&gt;, no seu aparelho.&lt;/li&gt;
+  &lt;li&gt;Os arquivos MIDI que você abre são lidos localmente. Eles &lt;strong&gt;não são enviados&lt;/strong&gt; a nenhum servidor.&lt;/li&gt;
+  &lt;li&gt;Os arquivos que você exporta (partitura em PDF, projeto em JSON, áudio WAV e MIDI) são criados no aparelho e só saem dele se você escolher salvar ou compartilhar.&lt;/li&gt;
+  &lt;li&gt;Ao desinstalar o aplicativo ou limpar seus dados, esses dados locais são apagados.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Conexão com a internet&lt;/h2&gt;
+&lt;p&gt;Os sons da gaita de boca já vêm dentro do aplicativo, que funciona sem internet. Conforme a versão, o aplicativo pode carregar a biblioteca de áudio (Tone.js) e a fonte (Inter) de servidores públicos (CDN); como em qualquer acesso à internet, esses servidores podem registrar o endereço IP e dados técnicos básicos do aparelho. O Gaita Bounce não envia nenhuma informação sua nesses pedidos. Servidores possíveis: jsDelivr e cdnjs (Cloudflare).&lt;/p&gt;
+
+&lt;h2&gt;Permissões&lt;/h2&gt;
+&lt;p&gt;O aplicativo usa apenas a permissão de acesso à internet (para carregar bibliotecas, quando necessário). Não acessa contatos, localização, câmera, microfone ou fotos. Arquivos só são lidos quando você os escolhe no seletor do sistema.&lt;/p&gt;
+
+&lt;h2&gt;Crianças&lt;/h2&gt;
+&lt;p&gt;O aplicativo não coleta informações de ninguém, incluindo crianças.&lt;/p&gt;
+
+&lt;h2&gt;Créditos&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Gravações de gaita de boca: soundfont &lt;em&gt;FluidR3_GM&lt;/em&gt; (Frank Wen), licença CC BY 3.0, via midi-js-soundfonts (gleitz).&lt;/li&gt;
+  &lt;li&gt;Áudio: Tone.js, licença MIT.&lt;/li&gt;
+  &lt;li&gt;Fonte: Inter, licença SIL Open Font License.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Contato&lt;/h2&gt;
+&lt;p&gt;Dúvidas sobre privacidade: &lt;a href=&quot;mailto:meuidwp@duck.com&quot;&gt;meuidwp@duck.com&lt;/a&gt;&lt;/p&gt;
+
+&lt;p class=&quot;muted&quot;&gt;Se esta política mudar, a nova versão será publicada nesta mesma página.&lt;/p&gt;
+
+&lt;hr id=&quot;en&quot;&gt;
+
+&lt;h1&gt;Gaita Bounce – Privacy Policy&lt;/h1&gt;
+&lt;p class=&quot;muted&quot;&gt;Last updated: October 12, 2026&lt;/p&gt;
+
+&lt;h2&gt;Summary&lt;/h2&gt;
+&lt;p&gt;Gaita Bounce &lt;strong&gt;does not collect, sell or share personal data&lt;/strong&gt;. It has no sign-up, login, ads, trackers or analytics.&lt;/p&gt;
+
+&lt;h2&gt;What stays on your device&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Your preferences (such as light/dark theme) are stored &lt;strong&gt;only in the app&#x27;s own storage on your device&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;MIDI files you open are read locally and &lt;strong&gt;are never uploaded&lt;/strong&gt; to any server.&lt;/li&gt;
+  &lt;li&gt;Files you export (PDF score, JSON project, WAV audio and MIDI) are created on your device and only leave it if you choose to save or share them.&lt;/li&gt;
+  &lt;li&gt;Uninstalling the app or clearing its data deletes this local data.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Internet access&lt;/h2&gt;
+&lt;p&gt;The harmonica sounds are bundled inside the app, which works offline. Depending on the version, the app may load the audio library (Tone.js) and the font (Inter) from public CDN servers; as with any internet request, those servers may log your IP address and basic technical device data. Gaita Bounce does not send any of your information in these requests. Possible servers: jsDelivr and cdnjs (Cloudflare).&lt;/p&gt;
+
+&lt;h2&gt;Permissions&lt;/h2&gt;
+&lt;p&gt;The app only uses internet access (to load libraries when needed). It does not access contacts, location, camera, microphone or photos. Files are only read when you pick them in the system file picker.&lt;/p&gt;
+
+&lt;h2&gt;Children&lt;/h2&gt;
+&lt;p&gt;The app does not collect information from anyone, including children.&lt;/p&gt;
+
+&lt;h2&gt;Credits&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Harmonica recordings: &lt;em&gt;FluidR3_GM&lt;/em&gt; soundfont (Frank Wen), CC BY 3.0, via midi-js-soundfonts (gleitz).&lt;/li&gt;
+  &lt;li&gt;Audio: Tone.js, MIT license.&lt;/li&gt;
+  &lt;li&gt;Font: Inter, SIL Open Font License.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Contact&lt;/h2&gt;
+&lt;p&gt;Privacy questions: &lt;a href=&quot;mailto:meuidwp@duck.com&quot;&gt;meuidwp@duck.com&lt;/a&gt;&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></div>
+
+<h2>Instalar e testar no celular</h2>
+<ul>
+<li>Ícone branco com a gaita azul e tela de abertura sem logos de terceiros.</li>
+<li>Tela inicial sem o botão PIX (escondido no APK) e com os créditos.</li>
+<li>Gire o celular: os botões da tela inicial continuam visíveis.</li>
+<li>Carregar MIDI: o seletor mostra seus arquivos .mid. Play toca; o selo mostra "Gaita" (gravações) ou "Sintetizador".</li>
+<li>Com um MIDI carregado, o furo da nota acende com seta de soprar/aspirar; toque no número menor no canto para trocar de posição.</li>
+<li>Em Partitura, componha algumas notas e toque em ⬇ Salvar e teste as quatro opções (Partitura PDF, Áudio WAV, JSON e MIDI): cada uma deve abrir a janela de compartilhar do Android. Salve em Arquivos e abra cada arquivo.</li>
+</ul>
+
+<h2>Política de privacidade</h2>
+<p>Link provável (depois do GitHub Pages publicar): <code class="i">https://capuchowp.github.io/gaitabounce/privacy.html</code>. Abra no navegador para confirmar.</p>
+
+<h2>Textos da loja</h2>
+<div class="blk"><div class="bh"><span class="bn">Descrição curta (PT)</span><button class="cp" data-t="t1">Copiar</button></div><pre id="t1"><code>Visualizador MIDI com gaita de boca: veja o furo, o sopro e a aspiração de cada nota.</code></pre></div><div class="blk"><div class="bh"><span class="bn">Short description (EN)</span><button class="cp" data-t="t2">Copiar</button></div><pre id="t2"><code>MIDI visualizer with harmonica: see the hole, blow and draw for every note.</code></pre></div><div class="blk"><div class="bh"><span class="bn">Descrição completa (PT)</span><button class="cp" data-t="t3">Copiar</button></div><pre id="t3"><code>Gaita Bounce é um visualizador MIDI para gaita de boca diatônica de 10 furos (afinação Richter em Dó). Abra um arquivo MIDI ou componha a sua própria partitura e veja, nota por nota, em qual furo tocar e se é soprando ou aspirando.
+
+O QUE VOCÊ PODE FAZER
+• Abrir arquivos MIDI (.mid) e acompanhar a gaita tocando, com o furo aceso e a seta de soprar (↑) ou aspirar (↓).
+• Ver bends (½, 1 e 1½ tom), overblows e overdraws quando a nota precisar deles.
+• Trocar a posição de uma nota quando ela existe em mais de um furo.
+• Cobrir de Dó4 a Dó7, todas as notas cromáticas.
+• Compor com até 8 vozes, inserir acordes e usar articulações e ligaduras.
+• Salvar a partitura em PDF (com pauta e furos), o áudio em WAV (com som real de gaita), o projeto em JSON e o MIDI.
+• Mudar a velocidade e alternar entre tema claro e escuro.
+• Funciona sem internet: as gravações de gaita vêm dentro do app.
+
+PRIVACIDADE
+Sem cadastro, sem anúncios e sem rastreamento. Seus arquivos ficam no seu aparelho.
+
+CRÉDITOS
+• Gravações de gaita de boca: soundfont FluidR3_GM (Frank Wen), licença CC BY 3.0, via midi-js-soundfonts.
+• Áudio: Tone.js (licença MIT).
+• Fonte: Inter (licença SIL Open Font License).</code></pre></div><div class="blk"><div class="bh"><span class="bn">Full description (EN)</span><button class="cp" data-t="t4">Copiar</button></div><pre id="t4"><code>Gaita Bounce is a MIDI visualizer for the 10-hole diatonic harmonica (Richter tuning, key of C). Open a MIDI file or write your own score and see, note by note, which hole to play and whether to blow or draw.
+
+WHAT YOU CAN DO
+• Open MIDI files (.mid) and follow the harmonica playing, with the hole lit up and a blow (↑) or draw (↓) arrow.
+• See bends (½, 1 and 1½ step), overblows and overdraws when a note needs them.
+• Switch the position of a note when it exists on more than one hole.
+• Cover C4 to C7, all chromatic notes.
+• Compose with up to 8 voices, insert chords and use articulations and ties.
+• Save the score as PDF (with staff and holes), the audio as WAV (with real harmonica sound), the project as JSON, and MIDI.
+• Change playback speed and switch between light and dark themes.
+• Works offline: the harmonica recordings are bundled in the app.
+
+PRIVACY
+No sign-up, no ads, no tracking. Your files stay on your device.
+
+CREDITS
+• Harmonica recordings: FluidR3_GM soundfont (Frank Wen), CC BY 3.0, via midi-js-soundfonts.
+• Audio: Tone.js (MIT license).
+• Font: Inter (SIL Open Font License).</code></pre></div><div class="blk"><div class="bh"><span class="bn">Novidades da versão (PT)</span><button class="cp" data-t="t5">Copiar</button></div><pre id="t5"><code>Primeira versão para Android.
+• Salvar partitura (PDF), áudio (WAV), projeto (JSON) e MIDI pelo menu de compartilhamento do Android.
+• Cabeçalho do celular em duas linhas: nome do app em cima e as opções logo abaixo.
+• Tela inicial ajustada para o celular deitado.</code></pre></div><div class="blk"><div class="bh"><span class="bn">What&#x27;s new (EN)</span><button class="cp" data-t="t6">Copiar</button></div><pre id="t6"><code>First Android release.
+• Save score (PDF), audio (WAV), project (JSON) and MIDI through the Android share menu.
+• Phone header on two lines: app name on top, options right below.
+• Start screen adjusted for landscape phones.</code></pre></div>
+
+<h2>Publicar no APKPure</h2>
+<p>Mesmo caminho do Clarinet Bounce em <a href="https://developer.apkpure.com/">developer.apkpure.com</a>: enviar novo app (nome e pacote), ícone 512×512 (<code class="i">icon-512x512.png</code>), banner 1024×500, capturas, descrição, categoria Música e o APK em Manage Versions. A análise costuma levar 24 a 48 horas, segundo a página de ajuda do APKPure.</p>
+
+<h2>O que pode dar problema na revisão</h2>
+<ul>
+<li><b>Gravações de terceiros (CC BY 3.0).</b> As gravações de gaita vêm do soundfont FluidR3_GM (Frank Wen), conforme o README do projeto, e já estão dentro do app. O crédito está no app, na política e nas descrições; confira a licença no repositório github.com/gleitz/midi-js-soundfonts.</li>
+<li><b>Uso da internet.</b> Os sons da gaita já estão embutidos e o app funciona sem internet; no APK a biblioteca Tone.js e a fonte também ficam dentro do app.</li>
+<li><b>Botão PIX.</b> Fica escondido no APK. Para mostrar, defina SHOW_PIX=1 no passo "Montar o app" do workflow.</li>
+<li><b>E-mail público.</b> A política usa meuidwp@duck.com, o mesmo que já estava no app.</li>
+</ul>
+</main>
+<script>
+document.querySelectorAll('.cp').forEach(function(b){b.addEventListener('click',function(){
+ var el=document.getElementById(b.dataset.t);var t=el.innerText;
+ var done=function(){b.textContent='Copiado';setTimeout(function(){b.textContent='Copiar'},1800)};
+ var fb=function(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selecionado: copie'};
+ try{navigator.clipboard.writeText(t).then(done,fb)}catch(e){fb()}
+})});
+</script>
+
+</body></html>
