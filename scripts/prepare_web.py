@@ -16,12 +16,14 @@ if os.path.isdir(WWW):
     shutil.rmtree(WWW)
 os.makedirs(VENDOR)
 
-for name in ["index.html", "manifest.json", "privacy.html"]:
+for name in ["index.html", "manifest.json", "privacy.html", "pro-config.js"]:
     src = os.path.join(ROOT, name)
     if os.path.exists(src):
         shutil.copy(src, WWW)
 for f in glob.glob(os.path.join(ROOT, "*.png")):
     shutil.copy(f, WWW)
+if os.path.isdir(os.path.join(ROOT, "hinos")):   # biblioteca de hinos (.mxl + index.json)
+    shutil.copytree(os.path.join(ROOT, "hinos"), os.path.join(WWW, "hinos"))
 
 index_path = os.path.join(WWW, "index.html")
 html = open(index_path, encoding="utf-8").read()
