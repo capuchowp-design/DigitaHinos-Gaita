@@ -7,6 +7,7 @@ window.PRO_CFG = {
   pixCity: 'SAO SEBASTIAO',                     // cidade (até 15 letras, sem acento)
   price: 19.90,                                 // valor em reais
   whatsapp: '5512974087661',                    // WhatsApp (com 55 + DDD) para receber o comprovante
+  free: true,                                   // true = app de amostra: tudo liberado, sem Pro (false volta ao modo Pro)
   freeHinos: 5,                                 // hinos 1 a N completos no modo grátis
   previewSec: 15                                // segundos de prévia nos demais hinos
 };

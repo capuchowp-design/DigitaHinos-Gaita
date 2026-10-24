@@ -1,6 +1,6 @@
 # gaitatab
 
-**Gaita Bounce** - visualizador MIDI com gaita de boca (harmônica diatônica de 10 furos, afinação Richter em Dó), no estilo do saxtab/flutetab.
+**DigitaHinos Gaita** - visualizador MIDI com gaita de boca (harmônica diatônica de 10 furos, afinação Richter em Dó), no estilo do saxtab/flutetab.
 
 - **Player**: abra um MIDI e veja a gaita tocando. O furo da nota acende, com seta ↑ (soprar) ou ↓ (aspirar) e, quando preciso, "bend ½ tom / 1 tom / 1½ tom" ou "overblow/overdraw". A nota aparece na pauta com o nome em solfejo. Quando a nota tem outra posição (ex.: Sol4 = furo 2 aspirar ou furo 3 soprar), ela aparece menor no canto; toque nela para trocar.
 - **Partitura**: editor em piano roll (vozes, acordes, articulações, ligaduras), com a posição da nota selecionada.

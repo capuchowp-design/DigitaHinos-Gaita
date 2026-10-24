@@ -1,6 +1,6 @@
 {
-  "name": "Gaita Bounce - Visualizador MIDI",
-  "short_name": "Gaita Bounce",
+  "name": "DigitaHinos Gaita - Visualizador MIDI",
+  "short_name": "DigitaHinos Gaita",
   "description": "Visualizador MIDI com gaita de boca animada e posição dos furos",
   "id": "./index.html",
   "start_url": "./index.html",
