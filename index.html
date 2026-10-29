@@ -529,6 +529,7 @@ window.FLUTE_SAMPLES={"v":2,"roots":[[60,0.95052,2.19995,"SUQzBAAAAAAAI1RTU0UAAA
                     <label class="welcome-upload" for="welcomeFileInput">Carregar partitura
                         <input type="file" id="welcomeFileInput" accept=".mid,.midi,.mxl,.xml,.musicxml,.json" style="display:none">
                     </label>
+                    <button class="welcome-compose" id="btnHinosWelcome">🎵 Hinos</button>
                     <button class="welcome-compose" onclick="switchView('score')">✏ Compor</button>
                 </div>
                 <div class="support-btns" style="margin-top:12px;">
@@ -1671,6 +1672,7 @@ async function openHino(h){
     }catch(e){ loadingOverlay.classList.remove('active'); toast('Erro: '+e.message); }
 }
 document.getElementById('hinosBtn').addEventListener('click',openHinos);
+document.getElementById('btnHinosWelcome').addEventListener('click',openHinos);
 document.getElementById('proBtn').addEventListener('click',()=>proPaywall(''));
 document.getElementById('proClose').addEventListener('click',proClose);
 document.getElementById('mPro').addEventListener('click',e=>{ if(e.target.id==='mPro') proClose(); });
