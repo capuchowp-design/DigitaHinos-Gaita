@@ -16,3 +16,9 @@ Overblow (furos 1–6) = nota de aspirar + ½ tom; overdraw (7–9) = nota de so
 Publique todos os arquivos na raiz do repositório (GitHub Pages). A cada atualização, mude o número em `CACHE_NAME` do `sw.js` (e o `?v=` dos ícones, se trocá-los).
 
 Créditos do som: FluidR3_GM por Frank Wen (CC BY 3.0), via github.com/gleitz/midi-js-soundfonts.
+
+## Gaita em Dó ou em Sol
+O seletor **Gaita** troca entre a gaita diatônica em Dó (Dó4–Dó7) e em Sol (Sol3–Sol6, uma quarta mais grave; furos, sopra/aspira e bends são os mesmos). O app sinaliza qual está em uso: selo colorido no cabeçalho (azul = Dó, âmbar = Sol), rótulo na gaita desenhada e cabeçalho da partitura/PDF. Os hinos são transpostos para o tom natural de cada gaita. A escolha fica salva no aparelho.
+
+## Partitura ao vivo e repetições
+A partitura que acompanha a música mostra a posição (furo ↑ soprar / ↓ aspirar) sob as notas. A ordem de execução respeita repetições e casas 1.2./3., inclusive a última nota antes do coro (ex.: hino 61).

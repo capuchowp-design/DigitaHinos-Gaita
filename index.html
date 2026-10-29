@@ -72,6 +72,9 @@ window.FLUTE_SAMPLES={"v":2,"roots":[[60,0.95052,2.19995,"SUQzBAAAAAAAI1RTU0UAAA
         .app-logo { display:flex; align-items:center; gap:8px; }
         .app-logo svg { width:28px; height:28px; }
         .app-logo .logo-name { font-size:16px; font-weight:700; background:linear-gradient(135deg,#1983e6,#3f7ee7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .hk-badge { font-size:11px; font-weight:700; padding:2px 9px; border-radius:10px; white-space:nowrap; background:rgba(46,134,193,.18); color:#4aa3df; border:1px solid rgba(46,134,193,.5); }
+        .hk-badge[data-k="G"] { background:rgba(242,169,59,.2); color:#f2a93b; border-color:rgba(242,169,59,.6); }
+        body.light .hk-badge { color:#1f6aa5; } body.light .hk-badge[data-k="G"] { color:#a9650a; }
         .note-count-badge { font-size:11px; padding:2px 8px; background:rgba(25,131,230,0.15); color:#1983e6; border-radius:10px; }
         .header-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
         .tab-btn {
@@ -456,6 +459,7 @@ window.FLUTE_SAMPLES={"v":2,"roots":[[60,0.95052,2.19995,"SUQzBAAAAAAAI1RTU0UAAA
 </g></svg>
         <span class="logo-name">DigitaHinos Gaita</span>
         <span class="note-count-badge" id="noteCountBadge" style="display:none">0 notas</span>
+        <span class="hk-badge" id="harpKeyBadge" data-k="C" title="Gaita selecionada (troque no seletor Gaita, abaixo do player)">Gaita em Dó (C)</span>
     </div>
     <div class="header-right">
         <button class="tab-btn active" id="tabPlayer" onclick="switchView('player')">
@@ -520,7 +524,7 @@ window.FLUTE_SAMPLES={"v":2,"roots":[[60,0.95052,2.19995,"SUQzBAAAAAAAI1RTU0UAAA
     <text x="88" y="38" font-size="14" opacity="0">&#9834;<animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="translate" values="0 6;4 -8" dur="3s" repeatCount="indefinite"/></text>
     <text x="100" y="62" font-size="11" opacity="0">&#9835;<animate attributeName="opacity" values="0;1;0" dur="3s" begin="1.2s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="translate" values="0 6;4 -8" dur="3s" begin="1.2s" repeatCount="indefinite"/></text></g></svg>
                 <h1>DigitaHinos Gaita</h1>
-                <p>Abra um hino, carregue um arquivo MIDI ou MusicXML (.mxl/.xml) ou crie sua própria partitura · gaita de boca diatônica (Dó) de C4 a C7</p>
+                <p>Abra um hino, carregue um arquivo MIDI ou MusicXML (.mxl/.xml) ou crie sua própria partitura · gaita de boca diatônica em Dó (C4–C7) ou em Sol (G3–G6)</p>
                 <div class="welcome-btns">
                     <label class="welcome-upload" for="welcomeFileInput">Carregar partitura
                         <input type="file" id="welcomeFileInput" accept=".mid,.midi,.mxl,.xml,.musicxml,.json" style="display:none">
@@ -588,6 +592,10 @@ window.FLUTE_SAMPLES={"v":2,"roots":[[60,0.95052,2.19995,"SUQzBAAAAAAAI1RTU0UAAA
         <div class="speed-control" id="voiceCtl" style="display:none" title="Escolha a voz que a gaita executa; em hinos a 4 vozes cada voz é levada para a extensão da gaita (C4 a C7)">
             <span>Voz:</span>
             <select id="voiceSel" aria-label="Voz a executar"></select>
+        </div>
+        <div class="speed-control" title="Qual gaita você está tocando: em Dó (C) ou em Sol (G). A gaita em Sol é uma quarta mais grave; os furos e sopra/aspira são os mesmos.">
+            <span>Gaita:</span>
+            <select id="harpKeySel" aria-label="Gaita em Dó ou em Sol"><option value="C">Dó (C)</option><option value="G">Sol (G)</option></select>
         </div>
         <div class="speed-control" id="keyCtl" style="display:none" title="A gaita diatônica em Dó não tem sustenidos/bemóis: o app transpõe o hino para o tom que usa só as notas naturais">
             <span>Tom:</span>
@@ -911,7 +919,19 @@ function parseMusicXML(text){
                 else if(t==='forward'){ cur+=nm(e,'duration',0); ext=Math.max(ext,cur); }
                 else if(t==='barline'){
                     const rp=c1(e,'repeat'); if(rp){ if(rp.getAttribute('direction')==='forward') info.fwd=true; else info.bwd=true; }
-                    const en=c1(e,'ending'); if(en){ if(en.getAttribute('type')==='start') info.endStart=(en.getAttribute('number')||'1').split(/[ ,]+/).map(s=>parseInt(s)).filter(x=>x>0); else info.endStop=true; }
+                    const en=c1(e,'ending'); if(en){
+                        if(en.getAttribute('type')==='start'){
+                            let nums=(en.getAttribute('number')||'1').split(/[ ,]+/).map(s=>parseInt(s)).filter(x=>x>0);
+                            // alguns programas gravam number="2" mas o rótulo impresso é "1.2." → vale o rótulo (senão a 1ª casa seria pulada)
+                            const lab=(en.textContent||'').trim();
+                            if(/^\d+(\s*[.,;\-–]\s*\d+)*\s*\.?$/.test(lab)){
+                                const ex=new Set();
+                                lab.replace(/\.$/,'').split(/\s*[.,;]\s*/).forEach(t=>{ const r=t.split(/\s*[\-–]\s*/).map(x=>parseInt(x)).filter(x=>x>0); if(r.length===2) for(let q=r[0];q<=r[1];q++) ex.add(q); else r.forEach(q=>ex.add(q)); });
+                                if(ex.size) nums=[...ex].sort((a,b)=>a-b);
+                            }
+                            info.endStart=nums;
+                        } else { info.endStop=true; info.endNums=(en.getAttribute('number')||'').split(/[ ,]+/).map(x=>parseInt(x)).filter(x=>x>0); }
+                    }
                 } else if(t==='note'){
                     if(c1(e,'grace')) continue;
                     const isChord=!!c1(e,'chord'), dur=nm(e,'duration',0), on=isChord?lastOn:cur;
@@ -932,7 +952,8 @@ function parseMusicXML(text){
     });
     const n=MI.length; if(!n) throw new Error('Nenhum compasso encontrado');
     const len=MI.map(m=>m.ext>1e-6?m.ext:m.nom);
-    let open=null; MI.forEach(m=>{ if(m.endStart) open=m.endStart; m.volta=open; if(m.endStop) open=null; });
+    // se a casa fecha sem ter sido aberta (falha em alguns arquivos), o próprio compasso vale como essa casa
+    let open=null; MI.forEach(m=>{ if(m.endStart) open=m.endStart; m.volta=(!open&&m.endStop&&m.endNums&&m.endNums.length)?m.endNums:open; if(m.endStop) open=null; });
     // ordem de execução (repetições e casas 1ª/2ª)
     const order=[]; { let i=0,secStart=0,pass=1,jumped=false,guard=0; const taken=new Set();
         while(i<n&&guard++<n*12){
@@ -941,7 +962,13 @@ function parseMusicXML(text){
             jumped=false;
             if(m.volta&&!m.volta.includes(pass)){ i++; continue; }
             order.push(i);
-            if(m.bwd){ if(!taken.has(i)){ taken.add(i); i=secStart; pass++; jumped=true; continue; } secStart=i+1; pass=1; }
+            if(m.bwd){
+                if(!taken.has(i)){ taken.add(i); i=secStart; pass++; jumped=true; continue; }
+                // repetição esgotada: se logo depois vem uma casa de número maior (ex.: casa 1.2. e depois casa 3.), a passada continua contando
+                // (senão a 3ª casa — a última nota da estrofe antes do coro — era pulada). Caso contrário, começa uma seção nova.
+                const nx=MI[i+1]; secStart=i+1;
+                if(nx&&nx.endStart&&nx.endStart.some(q=>q>pass)) pass++; else pass=1;
+            }
             i++;
         } }
     if(!order.length) for(let i=0;i<n;i++) order.push(i);
@@ -1391,7 +1418,7 @@ async function loadBuffer(buf,name){
         state.keyPc='auto'; hmBuildKeySel();
         await hmApply(false);
         const t=state.t, fo=state.foldedNotes||0;
-        toast('Carregado! '+state.totalNotes+' notas · '+(t?'transposto '+(t>0?'+':'−')+Math.abs(t)+' semitom'+(Math.abs(t)>1?'s':'')+' para a gaita em Dó':'já no tom ideal da gaita')+(fo?' · '+fo+' ajustadas à extensão (C4–C7)':''),'success');
+        toast('Carregado! '+state.totalNotes+' notas · '+(t?'transposto '+(t>0?'+':'−')+Math.abs(t)+' semitom'+(Math.abs(t)>1?'s':'')+' para a gaita em '+HARP_KEYS[HARP_KEY].n:'já no tom ideal da gaita')+(fo?' · '+fo+' ajustadas à extensão da gaita':''),'success');
     } catch(err){ toast('Erro: '+err.message); state.midiLoaded=false; }
     loadingOverlay.classList.remove('active');
 }
@@ -1426,6 +1453,7 @@ document.getElementById('voiceSel').addEventListener('change',e=>{
 
 // ---- adaptação à gaita diatônica em Dó: sem sustenidos/bemóis (transpõe o hino) e dentro de C4–C7 ----
 const HM_NAT=[0,2,4,5,7,9,11];
+const hmNat=()=>HM_NAT.map(x=>((x+HK)%12+12)%12);   // notas naturais da gaita: escala de Dó, ou de Sol (com Fá♯) na gaita em Sol
 function hmVoiceShifts(notes,t){            // oitava de cada voz: cabe em C4–C7 e fica perto de Dó5/Ré5
     const by={}; notes.forEach(n=>{ (by[n.track||0]=by[n.track||0]||[]).push(n.midi+t); });
     const out={};
@@ -1434,7 +1462,7 @@ function hmVoiceShifts(notes,t){            // oitava de cada voz: cabe em C4–
         for(let k=-48;k<=48;k+=12){
             let bad=0, bend=0;
             for(const m of arr){ const x=m+k; if(x<FL_LOW||x>FL_HIGH) bad++; else { const f=fingSets(x)[0]; if(f&&(f.bd||f.ov)) bend++; } }
-            const cost=bad*100+bend*2+Math.abs(med+k-74)*0.5;
+            const cost=bad*100+bend*2+Math.abs(med+k-(74+HK))*0.5;
             if(best===null||cost<best.cost) best={k,cost};
         }
         out[id]=best.k;
@@ -1446,7 +1474,7 @@ function hmBuild(raw,t){
     return raw.map(n=>{ let m=n.midi+t+sh[n.track||0]; while(m<FL_LOW) m+=12; while(m>FL_HIGH) m-=12; return Object.assign({},n,{midi:m}); });
 }
 function hmCost(raw,t){   // notas fora da escala natural de Dó pesam muito; notas que pedem bend/overblow pesam pouco
-    let c=0; for(const n of hmBuild(raw,t)){ if(!HM_NAT.includes(n.midi%12)) c+=10; else { const f=fingSets(n.midi)[0]; if(f&&(f.bd||f.ov)) c+=1; } }
+    let c=0; for(const n of hmBuild(raw,t)){ if(!hmNat().includes(n.midi%12)) c+=10; else { const f=fingSets(n.midi)[0]; if(f&&(f.bd||f.ov)) c+=1; } }
     return c+Math.abs(t)*0.05;
 }
 function hmBestT(raw){ let b=0,bc=1e18; for(let t=-6;t<=5;t++){ const c=hmCost(raw,t); if(c<bc-1e-9){ bc=c; b=t; } } return b; }
@@ -1468,6 +1496,22 @@ async function hmApply(keep){
     if(was) startPlayback();
 }
 document.getElementById('keySel').addEventListener('change',e=>{ state.keyPc=e.target.value; hmApply(true); });
+// ---- Gaita em Dó / Sol: sinalização no cabeçalho (selo), no seletor, na gaita desenhada e na partitura ----
+function harpKeyUI(){
+    const K=HARP_KEYS[HARP_KEY], b=document.getElementById('harpKeyBadge'), sel=document.getElementById('harpKeySel');
+    if(b){ b.textContent='Gaita em '+K.n+' ('+K.l+')'; b.dataset.k=HARP_KEY; }
+    if(sel&&sel.value!==HARP_KEY) sel.value=HARP_KEY;
+    const kc=document.getElementById('keyCtl'); if(kc) kc.title='A gaita diatônica em '+K.n+' tem as notas da escala de '+K.n+' maior; o app transpõe o hino para o tom que usa só essas notas';
+}
+async function harpSetKey(k){
+    if(!HARP_KEYS[k]) k='C'; HARP_KEY=k; try{ localStorage.setItem('harpKey',k); }catch(e){}
+    harpRebuild(); harpKeyUI();
+    if(state.hm){ state.hm.auto=hmBestT(state.hm.notes); state.keyPc='auto'; hmBuildKeySel(); await hmApply(true); }
+    else if(state.midiLoaded){ state.lowestNote=FL_LOW; state.highestNote=FL_HIGH; buildPianoKeys(); drawScene(); }
+    try{ renderPianoRoll(); renderScoreList(); updateScoreFing(); }catch(e){}
+    toast('Gaita em '+HARP_KEYS[k].n+' ('+HARP_KEYS[k].l+')'+(k==='G'?' · Sol3 a Sol6':' · Dó4 a Dó7'));
+}
+document.getElementById('harpKeySel').addEventListener('change',e=>harpSetKey(e.target.value));
 
 // ======================== MODO PRO (grátis x pro) ========================
 // Grátis: todos os hinos, mas só PRO_CFG.previewSec s de reprodução (qualquer voz); hinos 1..freeHinos completos.
@@ -1841,15 +1885,26 @@ function drawGrid(w,h,hl,pps){
 
 // ======================== POSIÇÃO NA GAITA (diatônica de 10 furos, afinação Richter em Dó · C4–C7) ========================
 // Cada nota tem uma ou mais posições: furo (1–10), soprar (↑) ou aspirar (↓), bend (meio tom, 1 tom, 1½ tom) ou overblow/overdraw.
-const FL_LOW=60, FL_HIGH=96;          // extensão: C4 a C7 (todas as notas cromáticas, usando bends e overblows)
-const HARP_BLOW=[60,64,67,72,76,79,84,88,91,96];
-const HARP_DRAW=[62,67,71,74,77,81,83,86,89,93];
+// Gaita em Dó (padrão) ou em Sol: a Richter em Sol é o mesmo layout uma quarta abaixo (furo 1 soprando = Sol3; a de Dó começa no Dó4).
+// Os furos, bends e overblows são idênticos; só muda a altura das notas.
+const HARP_KEYS={C:{n:'Dó',l:'C',off:0},G:{n:'Sol',l:'G',off:-5}};
+let HARP_KEY='C'; try{ const v=localStorage.getItem('harpKey'); if(HARP_KEYS[v]) HARP_KEY=v; }catch(e){}
+let HK=HARP_KEYS[HARP_KEY].off;
+let FL_LOW=60+HK, FL_HIGH=96+HK;      // extensão: C4–C7 (Dó) ou G3–G6 (Sol), com todas as notas cromáticas usando bends e overblows
+const B_BLOW=[60,64,67,72,76,79,84,88,91,96], B_DRAW=[62,67,71,74,77,81,83,86,89,93];
+const B_OB={1:63,2:68,3:72,4:75,5:78,6:82}, B_OD={7:85,8:89,9:92};
+const HARP_BLOW=B_BLOW.slice();
+const HARP_DRAW=B_DRAW.slice();
 const HARP_DB={1:[1],2:[1,2],3:[1,2,3],4:[1],6:[1]};        // aspirar com bend (semitons abaixo)
 const HARP_BB={8:[1],9:[1],10:[1,2]};                       // soprar com bend (semitons abaixo)
-const HARP_OB={1:63,2:68,3:72,4:75,5:78,6:82};              // overblow = nota de aspirar + 1 semitom (furos 1–6)
-const HARP_OD={7:85,8:89,9:92};                             // overdraw = nota de soprar + 1 semitom (furos 7–10)
+const HARP_OB=Object.assign({},B_OB);                       // overblow = nota de aspirar + 1 semitom (furos 1–6)
+const HARP_OD=Object.assign({},B_OD);                       // overdraw = nota de soprar + 1 semitom (furos 7–10)
 const FING={};
-(function(){
+function harpRebuild(){
+  HK=HARP_KEYS[HARP_KEY].off; FL_LOW=60+HK; FL_HIGH=96+HK;
+  for(let i=0;i<10;i++){ HARP_BLOW[i]=B_BLOW[i]+HK; HARP_DRAW[i]=B_DRAW[i]+HK; }
+  for(const h in B_OB) HARP_OB[h]=B_OB[h]+HK; for(const h in B_OD) HARP_OD[h]=B_OD[h]+HK;
+  for(const m in FING) delete FING[m];
   const add=(m,o)=>{ if(m>=FL_LOW&&m<=FL_HIGH) (FING[m]=FING[m]||[]).push(o); };
   for(let h=1;h<=10;h++){
     add(HARP_BLOW[h-1],{h,d:'b',bd:0,ov:0}); add(HARP_DRAW[h-1],{h,d:'d',bd:0,ov:0});
@@ -1859,7 +1914,9 @@ const FING={};
     if(HARP_OD[h]) add(HARP_OD[h],{h,d:'d',bd:0,ov:2});
   }
   for(const m in FING) FING[m].sort((a,b)=>(a.ov-b.ov)||(a.bd-b.bd)||(a.h-b.h));
-})();
+  try{ PR_MIDI_LOW=FL_LOW; PR_MIDI_HIGH=FL_HIGH; MLOW=FL_LOW; MHIGH=FL_HIGH; }catch(e){}   // compositor (declarados mais abaixo)
+}
+harpRebuild(); harpKeyUI();
 const HARP_COL={b:'#ff8a50',d:'#3fd2a0'};            // soprar = laranja, aspirar = verde-água
 const fingSets=m=>FING[m]||[];
 const BEND_TXT=['','½ tom','1 tom','1½ tom'];
@@ -1942,6 +1999,7 @@ function drawPiano(){
     c.font='600 14px Inter,sans-serif'; c.fillStyle=ink; c.fillText(tabDesc(set)+(nAlt>1?'  ·  posição '+((fluteAlt%nAlt)+1)+' de '+nAlt:''),22,76);
   }
   c.restore();
+  { const K=HARP_KEYS[HARP_KEY]; c.save(); c.textAlign='right'; c.font='800 13px Inter,sans-serif'; c.fillStyle=HARP_KEY==='G'?'#f2a93b':'#4aa3df'; c.fillText('Gaita em '+K.n+' ('+K.l+')',w-12,20); c.restore(); }
   // outra posição em miniatura, no cantinho (toque para trocar)
   fluteHit=null;
   if(alt){
@@ -2077,7 +2135,7 @@ const IS_TOUCH = window.matchMedia && window.matchMedia('(pointer:coarse)').matc
 const PR_BEAT_W_BASE = IS_TOUCH ? 128 : 96;   // largura de 1 tempo (px)
 const PR_ROW_H = IS_TOUCH ? 30 : 22;          // altura de cada nota/linha (px)
 const PR_LABEL_W = IS_TOUCH ? 46 : 42;        // coluna com os nomes das notas
-const PR_MIDI_LOW = FL_LOW, PR_MIDI_HIGH = FL_HIGH;   // C4 a D7
+let PR_MIDI_LOW = FL_LOW, PR_MIDI_HIGH = FL_HIGH;   // C4 a D7
 const L2S = {c:0,d:2,e:4,f:5,g:7,a:9,b:11};
 // Selection & interaction
 let selectedNoteIdx = -1; // index in scoreNotes of currently selected note
@@ -2223,7 +2281,7 @@ function addChord(){
 }
 
 // ---- Mini Piano ----
-const MLOW=FL_LOW, MHIGH=FL_HIGH;
+let MLOW=FL_LOW, MHIGH=FL_HIGH;
 function buildMiniPiano(){
     const container=document.getElementById('miniPianoKeys');
     if(!container) return;
@@ -3042,7 +3100,7 @@ function downloadBlob(blob,name){ tbSaveFile(name,blob); }
 // ---- JSON ----
 function scoreToJSON(){
     const bpm=parseInt(document.getElementById('scoreBpm').value)||120;
-    return {app:'DigitaHinos Gaita',formato:1,instrumento:'gaita de boca diatônica 10 furos, Dó (Richter)',
+    return {app:'DigitaHinos Gaita',formato:1,instrumento:'gaita de boca diatônica 10 furos, '+HARP_KEYS[HARP_KEY].n+' (Richter)',
         bpm,compasso:document.getElementById('scoreTimeSig').value,
         vozes:voices.map(v=>({id:v.id,nome:v.name,cor:v.color})),
         notas:[...scoreNotes].sort((a,b)=>a.beat-b.beat||a.midi-b.midi).map(n=>{
@@ -3121,7 +3179,7 @@ function scoreToPDF(){
     const newPage=()=>{ cv=document.createElement('canvas'); cv.width=W; cv.height=H; c=cv.getContext('2d'); c.fillStyle='#fff'; c.fillRect(0,0,W,H); pages.push(cv); y=M; };
     newPage();
     c.fillStyle='#111'; c.font='800 46px Inter,Arial,sans-serif'; c.textBaseline='alphabetic'; c.fillText('Partitura · DigitaHinos Gaita',M,y+34);
-    c.font='500 20px Inter,Arial,sans-serif'; c.fillStyle='#444'; c.fillText('Gaita de boca diatônica de 10 furos em Dó (Richter) · compasso '+ts+' · ♩ = '+bpm,M,y+70);
+    c.font='500 20px Inter,Arial,sans-serif'; c.fillStyle='#444'; c.fillText('Gaita de boca diatônica de 10 furos em '+HARP_KEYS[HARP_KEY].n+' ('+HARP_KEYS[HARP_KEY].l+', Richter) · compasso '+ts+' · ♩ = '+bpm,M,y+70);
     c.font='600 17px Inter,Arial,sans-serif'; c.fillStyle='#d2540c'; c.fillText('n↑ soprar',M,y+100); c.fillStyle='#12906a'; c.fillText('n↓ aspirar',M+120,y+100);
     c.fillStyle='#444'; c.fillText('½ · 1 · 1½ = bend (tons)   OB = overblow   OD = overdraw',M+250,y+100);
     y+=140;
@@ -3411,7 +3469,7 @@ function liveBuild(vi){
     LIVE.svgs=[]; LIVE.lay=[]; LIVE.heads=[]; LIVE.map=[]; LIVE.act=[]; LIVE.shown=null; LIVE.sys=-1; LIVE.ok=false;
     try{
         const src=playerScoreNotes();
-        const sd=withPlayerSource(()=>pbBuildScore({title:'',voice:vi,ts:playerTs(),valves:false}));
+        const sd=withPlayerSource(()=>pbBuildScore({title:'',voice:vi,ts:playerTs(),valves:true}));
         LIVE.svgs=sd.svgs; LIVE.lay=sd.lay; LIVE.heads=sd.heads; LIVE.W=sd.W;
         const pr=[]; src.forEach(n=>{ pr.push([n.t0,(n.beat-1)*8],[n.t1,(n.beat-1+n.duration)*8]); });
         pr.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
@@ -3434,7 +3492,7 @@ function liveScoreUpdate(){
     const host=liveHost();
     if(!state.midiLoaded){ host.style.display='none'; return; }
     const vi=state.voiceSel==='all'?'all':state.voiceIds.indexOf(state.voiceSel);
-    const sig=[vi,state.t,state.srcBpm,state.srcTs,state.srcPickup,state.srcKey].join('|');
+    const sig=[vi,HARP_KEY,state.t,state.srcBpm,state.srcTs,state.srcPickup,state.srcKey].join('|');
     if(LIVE.notesRef!==state.notes||LIVE.sig!==sig){ LIVE.notesRef=state.notes; LIVE.sig=sig; liveBuild(vi); }
     if(!LIVE.ok){ host.style.display='none'; return; }
     host.style.display='flex';
@@ -3654,7 +3712,7 @@ function pbBuildScore(opts){
         svgs.push(s); page=s;
         if(pageNo===1){
             pbEl(page,'text',{x:W/2,y:70,'text-anchor':'middle','font-family':'Georgia,Times New Roman,serif','font-size':28,'font-weight':'bold',fill:'#111'},title||'Sem título');
-            pbEl(page,'text',{x:MX,y:96,'font-family':'Georgia,serif','font-size':13,'font-style':'italic',fill:'#555'},'Gaita diatônica em Dó (10 furos) — posição sob as notas: ↑ soprar · ↓ aspirar');
+            pbEl(page,'text',{x:MX,y:96,'font-family':'Georgia,serif','font-size':13,'font-style':'italic',fill:'#555'},'Gaita diatônica em '+HARP_KEYS[HARP_KEY].n+' ('+HARP_KEYS[HARP_KEY].l+', 10 furos) — posição sob as notas: ↑ soprar · ↓ aspirar');
             pbEl(page,'ellipse',{cx:MX+5,cy:120,rx:4.6,ry:3.4,transform:'rotate(-20 '+(MX+5)+' 120)',fill:'#111'});
             pbEl(page,'line',{x1:MX+9.2,y1:119,x2:MX+9.2,y2:105,stroke:'#111','stroke-width':1.3});
             pbEl(page,'text',{x:MX+18,y:120,'font-family':'Arial,Helvetica,sans-serif','font-size':14,fill:'#111'},'= '+bpm);
